@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "claude-code-mcp": {
+      "command": "node",
+      "args": ["/Users/sora/Documents/GitHub/cc-mcp/dist/index.js"],
+      "env": {}
+    }
+  }
+}
