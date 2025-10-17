@@ -43,14 +43,26 @@ Check server status:
 ps aux | grep "tsx src/index.ts" | grep -v grep
 ```
 
-View logs:
-```bash
-tail -f mcp-server.log
-```
-
 ### Using with Claude Code
 
-Add to your Claude Code MCP configuration:
+#### Method 1: Add to Claude Code (Recommended)
+
+Use the `claude mcp add` command to add the MCP server:
+
+```bash
+claude mcp add claude-code-mcp node /absolute/path/to/cc-mcp/dist/index.js
+```
+
+For example:
+```bash
+claude mcp add claude-code-mcp node /Users/sora/Documents/GitHub/cc-mcp/dist/index.js
+```
+
+Then the MCP server will be automatically available in all Claude Code sessions.
+
+#### Method 2: Using Config File
+
+Add to your Claude Code MCP configuration file:
 
 ```json
 {
@@ -76,7 +88,6 @@ claude --mcp-config ./claude_mcp_config.json
 
 **Parameters:**
 - `prompt` (string, required): The task or request to delegate
-- `workspace_dir` (string, optional): Workspace directory path for file operations
 
 **How it works:**
 Every request is automatically prefixed with:
@@ -86,11 +97,6 @@ based on the nature of the task (e.g., code-reviewer, debugger, data-scientist,
 test-writer, documenter, or general-purpose).
 Create a detailed plan first, then execute it step by step.
 
-If the problem is complex or large, break it down into smaller sub-problems and use
-the mcp__claude-code-mcp__claude_code tool recursively to delegate each sub-problem
-to separate Claude instances. This allows parallel processing and better problem
-decomposition.
-
 User request: {your_prompt}
 ```
 
@@ -99,39 +105,6 @@ User request: {your_prompt}
 1. Simple task:
 ```
 Use mcp__claude-code-mcp__claude_code with prompt "Create a Python function to reverse a string"
-```
-
-2. With workspace:
-```
-Use mcp__claude-code-mcp__claude_code with:
-- prompt: "Refactor the authentication module"
-- workspace_dir: "/Users/sora/projects/my-app"
-```
-
-## Logging
-
-All activities are logged to stderr with prefixes:
-
-- **`[MCP]`**: MCP server activities
-  - Request start/completion
-  - Command execution details
-  - Timeouts and errors
-
-- **`[CLAUDE]`**: Secondary Claude instance activities
-  - Tool usage (Read, Edit, Bash, etc.)
-  - Progress updates
-  - Debug information
-
-**View logs:**
-```bash
-# All logs
-tail -f mcp-server.log
-
-# Claude activities only
-grep "\[CLAUDE\]" mcp-server.log
-
-# MCP server logs only
-grep "\[MCP\]" mcp-server.log
 ```
 
 ## Architecture
@@ -170,13 +143,10 @@ Response back through MCP
 cc-mcp/
 ├── src/
 │   └── index.ts           # Main MCP server
-├── test/
-│   └── test-direct.ts     # Direct CLI test
 ├── dist/                  # Built files
 ├── docs/
 │   └── 요구사항명세서.md  # Requirements (Korean)
 ├── claude_mcp_config.json # MCP configuration
-├── mcp-server.log         # Server logs
 ├── package.json
 └── README.md
 ```
