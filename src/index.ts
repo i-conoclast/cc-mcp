@@ -6,13 +6,7 @@ import {
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { spawn } from 'child_process';
-
-const CLAUDE_CLI_TIMEOUT = 36000000; // 10 hours
-
-// Fixed prompt prefix that instructs Claude to use sub-agent and create a plan
-const FIXED_PROMPT_PREFIX = `Use the Task tool to handle this request. Choose the most appropriate subagent_type based on the nature of the task (e.g., code-reviewer, debugger, data-scientist, test-writer, documenter, or general-purpose).
-Create a detailed plan first, then execute it step by step.
-User request: `;
+import { CLAUDE_CLI_TIMEOUT, FIXED_PROMPT_PREFIX, TOOL_CONFIG } from './config.js';
 
 interface ClaudeCliOptions {
   prompt: string;
@@ -103,28 +97,13 @@ async function main() {
   // List available tools
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     return {
-      tools: [
-        {
-          name: 'claude_code',
-          description: 'Delegate a task to another Claude instance for execution',
-          inputSchema: {
-            type: 'object',
-            properties: {
-              prompt: {
-                type: 'string',
-                description: 'The task to delegate',
-              },
-            },
-            required: ['prompt'],
-          },
-        },
-      ],
+      tools: [TOOL_CONFIG],
     };
   });
 
   // Handle tool calls
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
-    if (request.params.name === 'claude_code') {
+    if (request.params.name === TOOL_CONFIG.name) {
       const { prompt } = request.params.arguments as {
         prompt: string;
       };
