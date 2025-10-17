@@ -124,8 +124,6 @@ Claude Code CLI (--dangerously-skip-permissions --add-dir)
 Secondary Claude Instance
     ├─ Chooses appropriate sub-agent
     ├─ Creates detailed plan
-    ├─ If complex: Recursively calls mcp__claude-code-mcp__claude_code
-    │   └─ Spawns additional Claude instances for sub-tasks
     └─ Executes step by step
     ↓
 Response back through MCP
